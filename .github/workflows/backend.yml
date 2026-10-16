@@ -72,5 +72,20 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t "$REGISTRY/$REPOSITORY:$IMAGE_TAG" .
-          docker push "$REGISTRY/$REPOSITORY:$IMAGE_TAG"   
-          
+          docker push "$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+
+      - name: Put new image in staging task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition-family: penguinlog-backend-staging
+          container-name: backend
+          image: 298493766637.dkr.ecr.ap-southeast-2.amazonaws.com/penguinlog/backend:${{ github.sha }}
+
+      - name: Deploy backend to staging
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          cluster: penguinlog-staging
+          service: penguinlog-backend-staging-service-40lqk0j1
+          wait-for-service-stability: true
