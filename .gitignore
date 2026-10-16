@@ -4,7 +4,9 @@ backend/.idea/
 /workspace.xml
 # Editor-based HTTP Client requests
 backend/httpRequests/
-
+.venv/
+__pycache__/
+.pytest_cache/
 
 node_modules
 .DS_Store
@@ -19,3 +21,7 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+.coverage
+htmlcov/
+.env.*
+!.env.example
