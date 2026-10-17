@@ -5,9 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from database import Base, get_db
+from app.database import Base, get_db
+from app.models import AuthToken
 from main import app
-from models import AuthToken
 
 
 def test_database_and_basic_auth():
