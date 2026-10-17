@@ -1,0 +1,70 @@
+name: Staging deployment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - ".github/workflows/frontend.yml"
+      - ".github/workflows/backend.yml"
+      - ".github/workflows/staging.yml"
+      - ".github/workflows/staging-tests.yml"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.detect.outputs.frontend }}
+      backend: ${{ steps.detect.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Find changed apps
+        id: detect
+        shell: bash
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            git diff --name-only "$BEFORE" "$GITHUB_SHA" > changed-files.txt
+            if grep -Eq '^(frontend/|\.github/workflows/(frontend\.yml|staging\.yml|staging-tests\.yml)$)' changed-files.txt; then
+              echo 'frontend=true' >> "$GITHUB_OUTPUT"
+            else
+              echo 'frontend=false' >> "$GITHUB_OUTPUT"
+            fi
+            if grep -Eq '^(backend/|\.github/workflows/(backend\.yml|staging\.yml|staging-tests\.yml)$)' changed-files.txt; then
+              echo 'backend=true' >> "$GITHUB_OUTPUT"
+            else
+              echo 'backend=false' >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo 'frontend=true' >> "$GITHUB_OUTPUT"
+            echo 'backend=true' >> "$GITHUB_OUTPUT"
+          fi
+
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    uses: ./.github/workflows/frontend.yml
+
+  backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    uses: ./.github/workflows/backend.yml
+
+  staging-tests:
+    needs: [changes, frontend, backend]
+    if: >-
+      ${{ always() &&
+          needs.changes.result == 'success' &&
+          (needs.frontend.result == 'success' || needs.frontend.result == 'skipped') &&
+          (needs.backend.result == 'success' || needs.backend.result == 'skipped') &&
+          (needs.frontend.result == 'success' || needs.backend.result == 'success') }}
+    uses: ./.github/workflows/staging-tests.yml

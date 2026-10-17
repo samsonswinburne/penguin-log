@@ -1,0 +1,44 @@
+name: Staging tests
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: codebuild-penguinlog-staging-runner-${{ github.run_id }}-${{ github.run_attempt }}
+    timeout-minutes: 25
+    env:
+      E2E_BASE_URL: http://internal-penguinlog-staging-alb-1397129818.ap-southeast-2.elb.amazonaws.com
+      INTEGRATION_BASE_URL: http://internal-penguinlog-staging-alb-1397129818.ap-southeast-2.elb.amazonaws.com
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install backend test dependencies
+        run: python -m pip install pytest httpx
+
+      - name: Test staging API and database
+        run: python -m pytest -q backend/tests/integration/test_api_postgres.py
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install Chromium and system dependencies
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Test staging in Chromium
+        working-directory: frontend
+        run: npm run test:e2e
