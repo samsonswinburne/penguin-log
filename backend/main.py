@@ -1,13 +1,21 @@
 from contextlib import asynccontextmanager
+from hashlib import sha256
+from secrets import token_urlsafe
+from time import time
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
-from models import User
+from models import AuthToken, User
+
+
+TOKEN_LIFETIME_SECONDS = 24 * 60 * 60
+bearer = HTTPBearer(auto_error=False)
 
 
 @asynccontextmanager
@@ -27,7 +35,28 @@ class UserResponse(BaseModel):
     email: str
 
 
+class LoginResponse(UserResponse):
+    token: str
+    expires_at: int
+
+
 app = FastAPI(lifespan=lifespan)
+
+
+def current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
+    db: Session = Depends(get_db),
+) -> User:
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Not signed in")
+    token_hash = sha256(credentials.credentials.encode()).hexdigest()
+    auth_token = db.scalar(select(AuthToken).where(AuthToken.token_hash == token_hash))
+    if auth_token is None or auth_token.expires_at <= int(time()):
+        raise HTTPException(status_code=401, detail="Session expired or invalid")
+    user = db.get(User, auth_token.user_id)
+    if user is None:
+        raise HTTPException(status_code=401, detail="User no longer exists")
+    return user
 
 
 @app.get("/")
@@ -61,9 +90,32 @@ def register(credentials: Credentials, db: Session = Depends(get_db)):
     return user
 
 
-@app.post("/api/auth/login", response_model=UserResponse)
+@app.post("/api/auth/login", response_model=LoginResponse)
 def login(credentials: Credentials, db: Session = Depends(get_db)):
     user = db.scalar(select(User).where(User.email == credentials.email.strip().lower()))
     if user is None or user.password != credentials.password:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    token = token_urlsafe(32)
+    expires_at = int(time()) + TOKEN_LIFETIME_SECONDS
+    auth_token = db.get(AuthToken, user.id)
+    if auth_token is None:
+        db.add(AuthToken(user_id=user.id, token_hash=sha256(token.encode()).hexdigest(), expires_at=expires_at))
+    else:
+        auth_token.token_hash = sha256(token.encode()).hexdigest()
+        auth_token.expires_at = expires_at
+    db.commit()
+    return LoginResponse(id=user.id, email=user.email, token=token, expires_at=expires_at)
+
+
+@app.get("/api/auth/me", response_model=UserResponse)
+def me(user: User = Depends(current_user)):
     return user
+
+
+@app.post("/api/auth/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    auth_token = db.get(AuthToken, user.id)
+    if auth_token is not None:
+        db.delete(auth_token)
+        db.commit()
