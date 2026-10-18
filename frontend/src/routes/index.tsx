@@ -19,10 +19,18 @@ export function Home() {
 	return (
 		<main className="p-8">
 			<h1 className="text-4xl font-bold">PenguinLog</h1>
-			<p className="mt-4">Backend status: {status}</p>
-			<Link className="mt-8 inline-block" to="/auth">
-				Log in or sign up
-			</Link>
+			<p className="mt-4 text-lg">
+				Rate, review and keep a backlog of the games you play on Linux.
+			</p>
+			<p className="mt-8 flex gap-6">
+				<Link className="underline" to="/games">
+					Browse games
+				</Link>
+				<Link className="underline" to="/auth">
+					Log in or sign up
+				</Link>
+			</p>
+			<p className="mt-8 text-sm text-gray-600">Backend status: {status}</p>
 		</main>
 	);
 }

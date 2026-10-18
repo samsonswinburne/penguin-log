@@ -16,7 +16,9 @@ test("a new user can sign up, open the app, and log out", async ({ page }) => {
 
 	await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
 	await page.goto("/app");
-	await expect(page.getByText('Hello "/app"!')).toBeVisible();
+	await expect(
+		page.getByRole("heading", { name: "My PenguinLog" }),
+	).toBeVisible();
 
 	await page.goto("/auth");
 	await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
