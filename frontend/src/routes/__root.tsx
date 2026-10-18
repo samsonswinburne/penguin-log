@@ -1,5 +1,10 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	HeadContent,
+	Link,
+	Scripts,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import appCss from "../styles.css?url";
@@ -35,6 +40,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
+				<header className="flex flex-wrap gap-6 border-b px-8 py-4">
+					<Link className="font-bold" to="/">
+						PenguinLog
+					</Link>
+					<nav className="flex gap-6" aria-label="Main">
+						<Link to="/games">Games</Link>
+						<Link to="/app">My page</Link>
+						<Link to="/auth">Account</Link>
+					</nav>
+				</header>
 				{children}
 				<TanStackDevtools
 					config={{
