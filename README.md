@@ -13,6 +13,6 @@ Open http://localhost:3000 to register a user. All routes behind /app (where the
 Before pushing a frontend change, run: 
 1. npm run lint
 2. npm run test
-3. Before pushing a backend change, run:
+   Before pushing a backend change, run:
 1. python -m pytest -q
 
