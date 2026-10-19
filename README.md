@@ -11,8 +11,8 @@ The local backend and PostgreSQL run in Docker. The frontend runs with npm on yo
 Open http://localhost:3000 to register a user. All routes behind /app (where the actual app will live) are protected by needing to be signed in
 
 Before pushing a frontend change, run: 
-npm run lint
-npm run test
-Before pushing a backend change, run:
-python -m pytest -q
+1. npm run lint
+2. npm run test
+3. Before pushing a backend change, run:
+1. python -m pytest -q
 
