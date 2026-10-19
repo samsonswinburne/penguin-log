@@ -7,7 +7,7 @@ backend/httpRequests/
 .venv/
 __pycache__/
 .pytest_cache/
-
+.vscode/
 node_modules
 .DS_Store
 dist
