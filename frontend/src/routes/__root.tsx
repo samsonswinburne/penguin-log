@@ -40,7 +40,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body className="flex flex-col items-center">
-				<header className="sticky top-0 z-50 flex flex-wrap justify-around gap-6 border-b px-8 py-4 w-full shadow-2xl !rounded-none">
+				<header className="sticky top-0 z-50 flex flex-wrap justify-around gap-6 border-b px-8 py-4 w-full shadow-xl !rounded-none">
 					<Link className="font-bold text-xl" to="/">
 						PenguinLog
 					</Link>

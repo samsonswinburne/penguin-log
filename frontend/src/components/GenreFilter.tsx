@@ -10,10 +10,10 @@ export function GenreFilter({
 	onChange: (genre: number | undefined) => void;
 }) {
 	return (
-		<label className="block">
-			Genre
+		<label className="pt-2 ml-0.5 mb-0.5">
+			<p className="mb-1 font-semibold">Genre</p>
 			<select
-				className="block border p-2 h-full"
+				className="border"
 				value={value ?? ""}
 				onChange={(event) =>
 					onChange(event.target.value ? Number(event.target.value) : undefined)

@@ -101,17 +101,17 @@ body > :not(header) a, body > :not(header) .fakeLink {
     outline: solid var(--theme-colour-text) 0.15em;
 
     transition: background-color 0.2s ease;
+  }
 
-    &:hover {
-      background-color: var(--theme-colour-item-backdrop);
+  button:hover {
+    background-color: var(--theme-colour-item-backdrop);
 
-      &.btn-primary {
-        background-color: var(--theme-colour-item-primary);
-      }
+    &.btn-primary {
+      background-color: var(--theme-colour-item-primary);
+    }
 
-      &.btn-danger {
-        background-color: var(--theme-colour-item-danger);
-      }
+    &.btn-danger {
+      background-color: var(--theme-colour-item-danger);
     }
   }
 }
