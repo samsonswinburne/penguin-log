@@ -5,6 +5,17 @@
   box-sizing: border-box;
 }
 
+:root {
+  --theme-colour-background: #242a30;
+  --theme-colour-text: #a6b8c9;
+  --theme-colour-link: #55b3cf;
+}
+
+html, body {
+  background-color: var(--theme-colour-background);
+  color: var(--theme-colour-text);
+}
+
 html,
 body,
 #app {
@@ -15,3 +26,30 @@ body {
   margin: 0;
 }
 
+
+/* Link decoration */
+a {
+  text-decoration: none;
+  position: relative;
+  color: var(--theme-colour-link);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    translate: -50%;
+    top: 110%;
+    width: 50%;
+    height: 0.15em;
+    background-color: var(--theme-colour-link);
+    opacity: 0%;
+
+    transition-property: width, opacity;
+    transition: 0.25s ease;
+  }
+
+  &:hover::after {
+    width: 100%;
+    opacity: 100%;
+  }
+}
