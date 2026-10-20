@@ -13,7 +13,7 @@ export function GenreFilter({
 		<label className="block">
 			Genre
 			<select
-				className="block border p-2"
+				className="block border p-2 h-full"
 				value={value ?? ""}
 				onChange={(event) =>
 					onChange(event.target.value ? Number(event.target.value) : undefined)

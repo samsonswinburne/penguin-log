@@ -55,9 +55,9 @@ function GamesPage() {
 		});
 
 	return (
-		<main className="p-8">
+		<main className="w-5xl p-8">
 			<h1 className="text-4xl font-bold">Linux games</h1>
-			<div className="mt-6 flex flex-wrap items-end gap-4">
+			<div className="mt-6 flex flex-wrap items-end gap-4 w-full">
 				<GenreFilter
 					genres={genres}
 					value={genre}
@@ -68,7 +68,7 @@ function GamesPage() {
 					}
 				/>
 				<form
-					className="flex items-end gap-2"
+					className="flex items-end gap-2 grow-1"
 					onSubmit={(event) => {
 						event.preventDefault();
 						navigate({
@@ -80,10 +80,10 @@ function GamesPage() {
 						});
 					}}
 				>
-					<label className="block">
+					<label className="block w-full">
 						Search
 						<input
-							className="block border p-2"
+							className="block border p-2 w-full"
 							type="search"
 							value={query}
 							onChange={(event) => setQuery(event.target.value)}

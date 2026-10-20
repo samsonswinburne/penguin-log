@@ -17,7 +17,7 @@ export function Home() {
 	}, []);
 
 	return (
-		<main className="p-8">
+		<main className="flex flex-col p-8 w-5xl grow-1">
 			<h1 className="text-4xl font-bold">PenguinLog</h1>
 			<p className="mt-4 text-lg">
 				Rate, review and keep a backlog of the games you play on Linux.
@@ -30,7 +30,7 @@ export function Home() {
 					Log in or sign up
 				</Link>
 			</p>
-			<p className="mt-8 text-sm text-gray-600">Backend status: {status}</p>
+			<p className="text-sm text-gray-600 m-auto mb-0">Backend status: {status}</p>
 		</main>
 	);
 }
