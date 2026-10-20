@@ -26,9 +26,8 @@ body {
   margin: 0;
 }
 
-
 /* Link decoration */
-a {
+body > :not(header) a {
   text-decoration: none;
   position: relative;
   color: var(--theme-colour-link);
