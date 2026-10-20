@@ -22,8 +22,8 @@ function AppPage() {
 	if (profile === null) return null;
 	return (
 		<main className="items-center justify-center w-5xl p-8 grow-1">
-			<h1 className="text-4xl font-bold text-center">My PenguinLog</h1>
-			<p className="mt-4 text-center">
+			<h1 className="text-4xl font-bold text-center mt-4">My PenguinLog</h1>
+			<p className="mt-5 text-center">
 				<Link
 					className="underline"
 					to="/users/$userId"

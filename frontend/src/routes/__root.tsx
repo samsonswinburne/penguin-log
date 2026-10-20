@@ -40,14 +40,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body className="flex flex-col items-center">
-				<header className="flex flex-wrap justify-around gap-6 border-b px-8 py-4 w-full">
+				<header className="sticky top-0 z-50 flex flex-wrap justify-around gap-6 border-b px-8 py-4 w-full shadow-2xl !rounded-none">
 					<Link className="font-bold text-xl" to="/">
 						PenguinLog
 					</Link>
-					<nav className="flex gap-6" aria-label="Main">
-					<Link to="/games">Games</Link>
-					<Link to="/app">My page</Link>
-					<Link to="/auth">Account</Link>
+					<nav className="flex" aria-label="Main">
+					<Link to="/games" className="btn-header px-3">Games</Link>
+					<Link to="/app" className="btn-header px-3">My page</Link>
+					<Link to="/auth" className="btn-header px-3">Account</Link>
 					</nav>
 				</header>
 				{children}

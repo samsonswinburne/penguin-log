@@ -24,7 +24,7 @@ export function AccountSection() {
 			{user ? (
 				<div className="h-full flex flex-col justify-center grow-1">
 					<p className="text-center mb-4">Signed in as {user.email}</p>
-					<button type="button" onClick={() => void logOut()}>
+					<button type="button" className="btn-danger" onClick={() => void logOut()}>
 						Log out
 					</button>
 				</div>
