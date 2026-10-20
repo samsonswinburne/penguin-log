@@ -12,10 +12,6 @@
   --theme-colour-link: #55b3cf;
   --theme-colour-item-backdrop: #55b3cf11;
 }
-/* * {
-
-  background: #00000046
-} */
 
 html, body {
   background-color: var(--theme-colour-background);

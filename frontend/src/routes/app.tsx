@@ -21,9 +21,9 @@ function AppPage() {
 
 	if (profile === null) return null;
 	return (
-		<main className="max-w-xl p-8">
-			<h1 className="text-4xl font-bold">My PenguinLog</h1>
-			<p className="mt-4">
+		<main className="items-center justify-center w-5xl p-8 grow-1">
+			<h1 className="text-4xl font-bold text-center">My PenguinLog</h1>
+			<p className="mt-4 text-center">
 				<Link
 					className="underline"
 					to="/users/$userId"
@@ -36,7 +36,7 @@ function AppPage() {
 					Find games to review
 				</Link>
 			</p>
-			<section className="mt-8">
+			<section className="flex flex-col mt-20 items-center">
 				<h2 className="mb-4 text-2xl font-bold">Edit profile</h2>
 				<ProfileForm displayName={profile.display_name} bio={profile.bio} />
 			</section>
