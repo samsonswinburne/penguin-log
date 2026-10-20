@@ -11,6 +11,8 @@
   --theme-colour-text: #a6b8c9;
   --theme-colour-link: #55b3cf;
   --theme-colour-item-backdrop: #55b3cf11;
+  --theme-colour-item-primary: #3ab8533b;
+  --theme-colour-item-danger: #b83a3a3b;
 }
 
 html, body {
@@ -29,10 +31,11 @@ body {
 }
 
 /* Link decoration */
-body > :not(header) a {
+body > :not(header) a, body > :not(header) .fakeLink {
   text-decoration: none;
   position: relative;
   color: var(--theme-colour-link);
+  cursor: pointer;
 
   &::after {
     content: "";
@@ -58,11 +61,21 @@ body > :not(header) a {
 @layer button {
   button, select {
     cursor: pointer;
+    padding: 0.5em;
+    outline: solid var(--theme-colour-text) 0.15em;
 
-    transition: background-color 0.1s ease;
+    transition: background-color 0.2s ease;
 
     &:hover {
       background-color: var(--theme-colour-item-backdrop);
+
+      &.btn-primary {
+        background-color: var(--theme-colour-item-primary);
+      }
+
+      &.btn-danger {
+        background-color: var(--theme-colour-item-danger);
+      }
     }
   }
 }

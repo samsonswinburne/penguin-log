@@ -33,9 +33,9 @@ export function AuthForm({ mode, onAuthenticated }: AuthFormProps) {
 	}
 
 	return (
-		<form className="space-y-4" onSubmit={(event) => void submit(event)}>
-			<label className="block">
-				Email
+		<form className="w-full space-y-4" onSubmit={(event) => void submit(event)}>
+			<label className="block w-full">
+				<p className="p-1 mb-1 text-lg">Email</p>
 				<input
 					className="block w-full border p-2"
 					type="email"
@@ -46,7 +46,7 @@ export function AuthForm({ mode, onAuthenticated }: AuthFormProps) {
 				/>
 			</label>
 			<label className="block">
-				Password
+				<p className="p-1 mb-1 text-lg">Password</p>
 				<input
 					className="block w-full border p-2"
 					type="password"
@@ -56,10 +56,10 @@ export function AuthForm({ mode, onAuthenticated }: AuthFormProps) {
 					required
 				/>
 			</label>
-			<button type="submit" disabled={busy}>
+			<button type="submit" disabled={busy} className="mt-[1rem] ml-auto w-full btn-primary">
 				{mode === "signup" ? "Sign up" : "Log in"}
 			</button>
-			{message && <p role="alert">{message}</p>}
+			{message && <p role="alert" className="text-red-400 text-center">{message}</p>}
 		</form>
 	);
 }
