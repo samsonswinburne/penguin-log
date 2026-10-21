@@ -1,0 +1,137 @@
+name: Deploy production manually
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_run_id:
+        description: Successful Staging deployment run ID (number in its URL)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      STAGING_RUN_ID: ${{ inputs.staging_run_id }}
+      AWS_REGION: ap-southeast-2
+    steps:
+      - name: Verify successful staging run
+        run: |
+          set -euo pipefail
+          if [[ ! "$STAGING_RUN_ID" =~ ^[0-9]+$ ]]; then
+            echo 'Enter the numeric staging workflow run ID.' >&2
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$STAGING_RUN_ID" > staging-run.json
+          python - <<'PY'
+          import json
+          r = json.load(open('staging-run.json'))
+          if not (
+              r['path'] == '.github/workflows/staging.yml'
+              and r['event'] == 'push'
+              and r['head_branch'] == 'main'
+              and r['status'] == 'completed'
+              and r['conclusion'] == 'success'
+          ):
+              raise SystemExit('Selected run must be a successful, completed main-branch Staging deployment.')
+          print('Validated staging run:', r['html_url'])
+          PY
+
+      - name: Download the image pair recorded after staging tests
+        run: |
+          set -euo pipefail
+          gh run download "$STAGING_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --name production-release --dir release
+
+      - name: Validate release manifest
+        id: release
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, re
+          r = json.load(open('staging-run.json'))
+          m = json.load(open('release/release.json'))
+          if not (
+              m['schema'] == 1
+              and m['repository'] == os.environ['GITHUB_REPOSITORY']
+              and m['run_id'] == str(r['id'])
+              and m['run_attempt'] == str(r['run_attempt'])
+              and m['commit'] == r['head_sha']
+          ):
+              raise SystemExit('Release manifest does not match the selected staging run.')
+          registry = '298493766637.dkr.ecr.ap-southeast-2.amazonaws.com'
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              for app in ('frontend', 'backend'):
+                  image = m['images'][app]
+                  expected = rf'{re.escape(registry)}/penguinlog/{app}@sha256:[0-9a-f]{{64}}'
+                  if not re.fullmatch(expected, image):
+                      raise SystemExit(f'Invalid {app} image: expected this app repository and a sha256 digest.')
+                  output.write(f'{app}={image}\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write(f"Staging run: {r['html_url']}\n\nCommit: `{m['commit']}`\n\n")
+              for app, image in m['images'].items():
+                  summary.write(f'- {app}: `{image}`\n')
+          PY
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::298493766637:role/GitHub-Actions-Write-Read-ECR
+          aws-region: ap-southeast-2
+          allowed-account-ids: '298493766637'
+
+      # Read each service's currently deployed PRODUCTION definition, preserving
+      # production database settings and secrets, then change only its image.
+      - name: Download active production task definitions
+        run: |
+          set -euo pipefail
+          for app in backend frontend; do
+            task_arn=$(aws ecs describe-services --cluster penguinlog-production \
+              --services "penguinlog-$app-production-service" \
+              --query 'services[0].taskDefinition' --output text)
+            if [[ "$task_arn" != arn:aws:ecs:ap-southeast-2:298493766637:task-definition/penguinlog-"$app"-production:* ]]; then
+              echo "Unexpected or missing production task definition for $app" >&2
+              exit 1
+            fi
+            aws ecs describe-task-definition --task-definition "$task_arn" \
+              --query taskDefinition > "$app-production.json"
+          done
+
+      - name: Set backend image
+        id: backend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: backend-production.json
+          container-name: backend
+          image: ${{ steps.release.outputs.backend }}
+
+      - name: Set frontend image
+        id: frontend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: frontend-production.json
+          container-name: frontend
+          image: ${{ steps.release.outputs.frontend }}
+
+      - name: Deploy backend to production
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.backend.outputs.task-definition }}
+          cluster: penguinlog-production
+          service: penguinlog-backend-production-service
+          wait-for-service-stability: true
+
+      - name: Deploy frontend to production
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.frontend.outputs.task-definition }}
+          cluster: penguinlog-production
+          service: penguinlog-frontend-production-service
+          wait-for-service-stability: true
