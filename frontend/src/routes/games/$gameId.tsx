@@ -52,12 +52,11 @@ function GamePage() {
 	if (game === null) return <main className="p-8">Loading…</main>;
 
 	const maxSummaryLength = 400;
-	
+
 	function shortenSummary(str: string) {
+		if (str.length <= maxSummaryLength) return [str, ""];
 
-		if (str.length <= maxSummaryLength) return [str, ''];
-
-		const lastSpace = str.lastIndexOf(' ', maxSummaryLength)
+		const lastSpace = str.lastIndexOf(" ", maxSummaryLength);
 		const sliceIndex = lastSpace > 0 ? lastSpace : maxSummaryLength;
 		return `${str.slice(0, sliceIndex)} ...`;
 	}
@@ -75,10 +74,27 @@ function GamePage() {
 					? "Not rated yet"
 					: `Average rating: ${game.average_rating} / 10 (${game.review_count} ${game.review_count === 1 ? "review" : "reviews"})`}
 			</p>
-			{game.summary && <div>
-				<p className="inline mt-4">{longSummaryVisible ? game.summary : shortenSummary(game.summary)}</p>
-				{game.summary?.length > maxSummaryLength && <p id="summaryToggle" className="fakeLink inline ml-2 text-blue-500 w-fit" onClick={() => { setLongSummary(!longSummaryVisible) }} onKeyDown={() => { setLongSummary(!longSummaryVisible) }}>{longSummaryVisible ? "Hide" : "Read more"}</p>}
-				</div>}
+			{game.summary && (
+				<div>
+					<p className="inline mt-4">
+						{longSummaryVisible ? game.summary : shortenSummary(game.summary)}
+					</p>
+					{game.summary?.length > maxSummaryLength && (
+						<p
+							id="summaryToggle"
+							className="fakeLink inline ml-2 text-blue-500 w-fit"
+							onClick={() => {
+								setLongSummary(!longSummaryVisible);
+							}}
+							onKeyDown={() => {
+								setLongSummary(!longSummaryVisible);
+							}}
+						>
+							{longSummaryVisible ? "Hide" : "Read more"}
+						</p>
+					)}
+				</div>
+			)}
 			{game.igdb_url && (
 				<a className="block w-fit ml-auto mt-2" href={game.igdb_url}>
 					View on IGDB

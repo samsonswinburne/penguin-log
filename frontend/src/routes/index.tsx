@@ -11,7 +11,7 @@ export function Home() {
 	useEffect(() => {
 		void restoreUser().then(setUser);
 	}, []);
-	
+
 	useEffect(() => {
 		fetch("/api/health")
 			.then((response) => {
@@ -32,12 +32,15 @@ export function Home() {
 				<Link className="underline w-fit" to="/games">
 					Browse games
 				</Link>
-				{!user && (<Link className="underline w-fit" to="/auth">
-					Log in or sign up
-				</Link>)
-				}
+				{!user && (
+					<Link className="underline w-fit" to="/auth">
+						Log in or sign up
+					</Link>
+				)}
 			</p>
-			<p className="text-sm text-gray-600 m-auto mb-0">Backend status: {status}</p>
+			<p className="text-sm text-gray-600 m-auto mb-0">
+				Backend status: {status}
+			</p>
 		</main>
 	);
 }

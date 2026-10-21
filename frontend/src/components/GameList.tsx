@@ -13,7 +13,10 @@ export function GameList({
 	return (
 		<ul className="border-y !rounded-none">
 			{games.map((game) => (
-				<li key={game.id} className="p-2 !rounded-sm even:bg-[#00000046] first:mt-2 last:mb-2">
+				<li
+					key={game.id}
+					className="p-2 !rounded-sm even:bg-[#00000046] first:mt-2 last:mb-2"
+				>
 					<Link
 						className="font-semibold underline"
 						to="/games/$gameId"

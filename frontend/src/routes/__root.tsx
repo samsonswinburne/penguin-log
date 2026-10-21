@@ -45,9 +45,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 						PenguinLog
 					</Link>
 					<nav className="flex" aria-label="Main">
-					<Link to="/games" className="btn-header px-3">Games</Link>
-					<Link to="/app" className="btn-header px-3">My page</Link>
-					<Link to="/auth" className="btn-header px-3">Account</Link>
+						<Link to="/games" className="btn-header px-3">
+							Games
+						</Link>
+						<Link to="/app" className="btn-header px-3">
+							My page
+						</Link>
+						<Link to="/auth" className="btn-header px-3">
+							Account
+						</Link>
 					</nav>
 				</header>
 				{children}

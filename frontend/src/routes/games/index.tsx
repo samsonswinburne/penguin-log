@@ -108,7 +108,10 @@ function GamesPage() {
 						</p>
 						<GameList games={result.items} empty="No games match." />
 						{pages > 1 && (
-							<nav className="mt-6 flex justify-between items-center gap-4" aria-label="Pages">
+							<nav
+								className="mt-6 flex justify-between items-center gap-4"
+								aria-label="Pages"
+							>
 								<button
 									className="border px-4 py-2 min-w-1/5 disabled:opacity-50 disabled:!cursor-not-allowed"
 									type="button"

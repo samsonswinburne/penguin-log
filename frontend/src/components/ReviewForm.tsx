@@ -70,7 +70,11 @@ export function ReviewForm({
 				/>
 			</label>
 			<div className="flex gap-4">
-				<button className="btn-primary border px-4 py-2" type="submit" disabled={busy}>
+				<button
+					className="btn-primary border px-4 py-2"
+					type="submit"
+					disabled={busy}
+				>
 					{submitLabel}
 				</button>
 				{onDelete && (

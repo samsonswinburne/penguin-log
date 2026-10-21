@@ -53,7 +53,11 @@ export function ProfileForm({
 					maxLength={1000}
 				/>
 			</label>
-			<button className="btn-primary border w-full px-4 py-2 mt-2" type="submit" disabled={busy}>
+			<button
+				className="btn-primary border w-full px-4 py-2 mt-2"
+				type="submit"
+				disabled={busy}
+			>
 				Save profile
 			</button>
 			{message && <p aria-live="polite">{message}</p>}

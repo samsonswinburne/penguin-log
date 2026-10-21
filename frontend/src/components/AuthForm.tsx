@@ -56,10 +56,18 @@ export function AuthForm({ mode, onAuthenticated }: AuthFormProps) {
 					required
 				/>
 			</label>
-			<button type="submit" disabled={busy} className="mt-[1rem] ml-auto w-full btn-primary">
+			<button
+				type="submit"
+				disabled={busy}
+				className="mt-[1rem] ml-auto w-full btn-primary"
+			>
 				{mode === "signup" ? "Sign up" : "Log in"}
 			</button>
-			{message && <p role="alert" className="text-red-400 text-center">{message}</p>}
+			{message && (
+				<p role="alert" className="text-red-400 text-center">
+					{message}
+				</p>
+			)}
 		</form>
 	);
 }

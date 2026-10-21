@@ -24,7 +24,11 @@ export function AccountSection() {
 			{user ? (
 				<div className="h-full flex flex-col justify-center grow-1">
 					<p className="text-center mb-4">Signed in as {user.email}</p>
-					<button type="button" className="btn-danger" onClick={() => void logOut()}>
+					<button
+						type="button"
+						className="btn-danger"
+						onClick={() => void logOut()}
+					>
 						Log out
 					</button>
 				</div>
@@ -33,18 +37,26 @@ export function AccountSection() {
 					{authMode === "login" ? (
 						<>
 							<LoginForm onAuthenticated={setUser} />
-							<p className="fakeLink mt-5 block mx-auto w-fit" onKeyUp={() => setAuthMode("signup")} onClick={() => setAuthMode("signup")}>
-							Don't have an account?
+							<p
+								className="fakeLink mt-5 block mx-auto w-fit"
+								onKeyUp={() => setAuthMode("signup")}
+								onClick={() => setAuthMode("signup")}
+							>
+								Don't have an account?
 							</p>
 						</>
-						) : (
+					) : (
 						<>
 							<SignupForm onAuthenticated={setUser} />
-							<p className="fakeLink mt-5 block mx-auto w-fit" onKeyUp={() => setAuthMode("login")} onClick={() => setAuthMode("login")}>
-							Already have an account?
+							<p
+								className="fakeLink mt-5 block mx-auto w-fit"
+								onKeyUp={() => setAuthMode("login")}
+								onClick={() => setAuthMode("login")}
+							>
+								Already have an account?
 							</p>
 						</>
-						)}
+					)}
 				</div>
 			)}
 		</section>
