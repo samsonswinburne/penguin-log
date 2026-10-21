@@ -24,6 +24,7 @@ function GamePage() {
 	const [state, setState] = useState<GameState | null>(null);
 	const [signedIn, setSignedIn] = useState(false);
 	const [error, setError] = useState("");
+	const [longSummaryVisible, setLongSummary] = useState(false);
 
 	const load = useCallback(async () => {
 		try {
@@ -50,6 +51,17 @@ function GamePage() {
 	if (error) return <main className="p-8">{error}</main>;
 	if (game === null) return <main className="p-8">Loading…</main>;
 
+	const maxSummaryLength = 400;
+	
+	function shortenSummary(str: String) {
+
+		if (str.length <= maxSummaryLength) return [str, ''];
+
+		const lastSpace = str.lastIndexOf(' ', maxSummaryLength)
+		const sliceIndex = lastSpace > 0 ? lastSpace : maxSummaryLength;
+		return str.slice(0, sliceIndex) + "...";
+	}
+
 	return (
 		<main className="max-w-3xl p-8">
 			<h1 className="text-4xl font-bold mt-4 mb-4">{game.name}</h1>
@@ -63,7 +75,8 @@ function GamePage() {
 					? "Not rated yet"
 					: `Average rating: ${game.average_rating} / 10 (${game.review_count} ${game.review_count === 1 ? "review" : "reviews"})`}
 			</p>
-			{game.summary && <p className="mt-4">{game.summary}</p>}
+			{game.summary && <p className="mt-4">{longSummaryVisible ? game.summary : shortenSummary(game.summary)}
+				{game.summary?.length > maxSummaryLength && <span id="summaryToggle" className="fakeLink inline-block ml-2 text-blue-500 w-fit" onClick={() => { setLongSummary(!longSummaryVisible) }} onKeyDown={() => { setLongSummary(!longSummaryVisible) }}>{longSummaryVisible ? "Hide" : "Read more"}</span>}</p>}
 			{game.igdb_url && (
 				<a className="block w-fit ml-auto mt-2" href={game.igdb_url}>
 					View on IGDB
