@@ -5,11 +5,8 @@ test("a new user can sign up, open the app, and log out", async ({ page }) => {
 
 	await page.goto("/auth");
 	await page.waitForLoadState("networkidle");
-	await page.getByRole("tab", { name: "Sign up" }).click();
-	await expect(page.getByRole("tab", { name: "Sign up" })).toHaveAttribute(
-		"aria-selected",
-		"true",
-	);
+	await page.getByText("Don't have an account?").click();
+	await expect(page.getByText("Already have an account?")).toBeVisible();
 	await page.getByLabel("Email").fill(email);
 	await page.getByLabel("Password").fill("test-password-123");
 	await page.getByRole("button", { name: "Sign up" }).click();

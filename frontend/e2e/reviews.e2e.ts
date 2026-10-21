@@ -4,7 +4,7 @@ async function signUp(page: Page) {
 	const email = `e2e-${crypto.randomUUID()}@example.test`;
 	await page.goto("/auth");
 	await page.waitForLoadState("networkidle");
-	await page.getByRole("tab", { name: "Sign up" }).click();
+	await page.getByText("Don't have an account?").click();
 	await page.getByLabel("Email").fill(email);
 	await page.getByLabel("Password").fill("test-password-123");
 	await page.getByRole("button", { name: "Sign up" }).click();
