@@ -55,9 +55,9 @@ function GamesPage() {
 		});
 
 	return (
-		<main className="p-8">
-			<h1 className="text-4xl font-bold">Linux games</h1>
-			<div className="mt-6 flex flex-wrap items-end gap-4">
+		<main className="w-5xl p-8">
+			<h1 className="text-4xl font-bold mt-4">Linux games</h1>
+			<div className="mt-6 flex flex-wrap items-end gap-4 w-full">
 				<GenreFilter
 					genres={genres}
 					value={genre}
@@ -68,7 +68,7 @@ function GamesPage() {
 					}
 				/>
 				<form
-					className="flex items-end gap-2"
+					className="flex items-end gap-2 grow-1"
 					onSubmit={(event) => {
 						event.preventDefault();
 						navigate({
@@ -80,16 +80,17 @@ function GamesPage() {
 						});
 					}}
 				>
-					<label className="block">
-						Search
+					<label className="block w-full">
+						<p className="mb-1 font-semibold">Search</p>
 						<input
-							className="block border p-2"
+							className="border-[0.2em] !rounded-md p-2 w-full"
 							type="search"
+							placeholder="Search for a game..."
 							value={query}
 							onChange={(event) => setQuery(event.target.value)}
 						/>
 					</label>
-					<button className="border px-4 py-2" type="submit">
+					<button className="border px-4 py-2 ml-2 mb-0.5 mr-0.5" type="submit">
 						Search
 					</button>
 				</form>
@@ -107,9 +108,12 @@ function GamesPage() {
 						</p>
 						<GameList games={result.items} empty="No games match." />
 						{pages > 1 && (
-							<nav className="mt-4 flex items-center gap-4" aria-label="Pages">
+							<nav
+								className="mt-6 flex justify-between items-center gap-4"
+								aria-label="Pages"
+							>
 								<button
-									className="border px-4 py-2"
+									className="border px-4 py-2 min-w-1/5 disabled:opacity-50 disabled:!cursor-not-allowed"
 									type="button"
 									disabled={page <= 1}
 									onClick={() => goToPage(page - 1)}
@@ -120,7 +124,7 @@ function GamesPage() {
 									Page {page} of {pages}
 								</span>
 								<button
-									className="border px-4 py-2"
+									className="border px-4 py-2 min-w-1/5 disabled:opacity-50 disabled:!cursor-not-allowed"
 									type="button"
 									disabled={page >= pages}
 									onClick={() => goToPage(page + 1)}

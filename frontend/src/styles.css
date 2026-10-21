@@ -3,15 +3,115 @@
 
 * {
   box-sizing: border-box;
+  border-radius: 0.3em;
+}
+
+:root {
+  --theme-colour-background: #242a30;
+  --theme-colour-text: #a6b8c9;
+  --theme-colour-link: #55b3cf;
+  --theme-colour-item-backdrop: #55b3cf11;
+  --theme-colour-item-primary: #3ab8533b;
+  --theme-colour-item-danger: #b83a3a3b;
+}
+
+html, body {
+  background-color: var(--theme-colour-background);
+  color: var(--theme-colour-text);
 }
 
 html,
 body,
 #app {
-  min-height: 100%;
+  min-height: 100vh;
+}
+
+header {
+  background-color: var(--theme-colour-background);
 }
 
 body {
   margin: 0;
 }
 
+/* Link decoration */
+body > :not(header) a, body > :not(header) .fakeLink {
+  text-decoration: none;
+  position: relative;
+  color: var(--theme-colour-link);
+  cursor: pointer;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    translate: -50%;
+    top: 110%;
+    width: 50%;
+    height: 0.15em;
+    background-color: var(--theme-colour-link);
+    opacity: 0%;
+
+    transition-property: width, opacity;
+    transition: 0.25s ease;
+  }
+
+  &:hover::after {
+    width: 100%;
+    opacity: 100%;
+  }
+}
+
+@layer button {
+  header:has(.btn-header:hover) .btn-header:not(:hover) {
+    opacity: 0.5;
+  }
+
+  .btn-header {  
+    text-decoration: none;
+    position: relative;
+    cursor: pointer;
+
+    transition: opacity 0.2s ease;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      translate: -50%;
+      top: 110%;
+      width: 50%;
+      height: 0.15em;
+      background-color: var(--theme-colour-text);
+      opacity: 0%;
+
+      transition-property: width, opacity;
+      transition: 0.25s ease;
+    }
+
+    &:hover::after {
+      width: 100%;
+      opacity: 100%;
+    }
+  }
+
+  button, select {
+    cursor: pointer;
+    padding: 0.5em;
+    outline: solid var(--theme-colour-text) 0.15em;
+
+    transition: background-color 0.2s ease;
+  }
+
+  button:hover {
+    background-color: var(--theme-colour-item-backdrop);
+
+    &.btn-primary {
+      background-color: var(--theme-colour-item-primary);
+    }
+
+    &.btn-danger {
+      background-color: var(--theme-colour-item-danger);
+    }
+  }
+}

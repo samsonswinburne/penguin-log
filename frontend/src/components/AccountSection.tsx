@@ -20,40 +20,44 @@ export function AccountSection() {
 	}
 
 	return (
-		<section className="mt-8 max-w-sm space-y-4">
+		<section className="flex flex-col grow-1 w-full mt-8 space-y-4">
 			{user ? (
-				<>
-					<p>Signed in as {user.email}</p>
-					<button type="button" onClick={() => void logOut()}>
+				<div className="h-full flex flex-col justify-center grow-1">
+					<p className="text-center mb-4">Signed in as {user.email}</p>
+					<button
+						type="button"
+						className="btn-danger"
+						onClick={() => void logOut()}
+					>
 						Log out
 					</button>
-				</>
+				</div>
 			) : (
-				<>
-					<div className="flex gap-4" role="tablist" aria-label="Account">
-						<button
-							type="button"
-							role="tab"
-							aria-selected={authMode === "login"}
-							onClick={() => setAuthMode("login")}
-						>
-							Log in
-						</button>
-						<button
-							type="button"
-							role="tab"
-							aria-selected={authMode === "signup"}
-							onClick={() => setAuthMode("signup")}
-						>
-							Sign up
-						</button>
-					</div>
+				<div className="my-auto w-full">
 					{authMode === "login" ? (
-						<LoginForm onAuthenticated={setUser} />
+						<>
+							<LoginForm onAuthenticated={setUser} />
+							<p
+								className="fakeLink mt-5 block mx-auto w-fit"
+								onKeyUp={() => setAuthMode("signup")}
+								onClick={() => setAuthMode("signup")}
+							>
+								Don't have an account?
+							</p>
+						</>
 					) : (
-						<SignupForm onAuthenticated={setUser} />
+						<>
+							<SignupForm onAuthenticated={setUser} />
+							<p
+								className="fakeLink mt-5 block mx-auto w-fit"
+								onKeyUp={() => setAuthMode("login")}
+								onClick={() => setAuthMode("login")}
+							>
+								Already have an account?
+							</p>
+						</>
 					)}
-				</>
+				</div>
 			)}
 		</section>
 	);

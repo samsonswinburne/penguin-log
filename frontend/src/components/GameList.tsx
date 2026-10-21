@@ -11,9 +11,12 @@ export function GameList({
 	if (games.length === 0) return <p className="text-gray-600">{empty}</p>;
 
 	return (
-		<ul className="divide-y border-y">
+		<ul className="border-y !rounded-none">
 			{games.map((game) => (
-				<li key={game.id} className="py-2">
+				<li
+					key={game.id}
+					className="p-2 !rounded-sm even:bg-[#00000046] first:mt-2 last:mb-2"
+				>
 					<Link
 						className="font-semibold underline"
 						to="/games/$gameId"

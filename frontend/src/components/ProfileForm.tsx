@@ -32,9 +32,9 @@ export function ProfileForm({
 	}
 
 	return (
-		<form className="space-y-4" onSubmit={(event) => void submit(event)}>
-			<label className="block">
-				Display name
+		<form className="space-y-4 w-lg" onSubmit={(event) => void submit(event)}>
+			<label className="block w-full">
+				<p className="pb-2 font-semibold">Display name</p>
 				<input
 					className="block w-full border p-2"
 					value={displayName}
@@ -43,8 +43,8 @@ export function ProfileForm({
 					required
 				/>
 			</label>
-			<label className="block">
-				Bio
+			<label className="block w-full">
+				<p className="pb-2 font-semibold">Bio</p>
 				<textarea
 					className="block w-full border p-2"
 					rows={4}
@@ -53,7 +53,11 @@ export function ProfileForm({
 					maxLength={1000}
 				/>
 			</label>
-			<button className="border px-4 py-2" type="submit" disabled={busy}>
+			<button
+				className="btn-primary border w-full px-4 py-2 mt-2"
+				type="submit"
+				disabled={busy}
+			>
 				Save profile
 			</button>
 			{message && <p aria-live="polite">{message}</p>}

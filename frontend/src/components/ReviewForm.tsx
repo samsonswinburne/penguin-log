@@ -46,7 +46,7 @@ export function ReviewForm({
 	return (
 		<form className="space-y-4" onSubmit={submit}>
 			<label className="block">
-				Rating
+				<p className="mb-2 ml-1 font-semibold">Rating</p>
 				<select
 					className="block border p-2"
 					value={rating}
@@ -60,7 +60,7 @@ export function ReviewForm({
 				</select>
 			</label>
 			<label className="block">
-				Comment
+				<p className="mb-1.5 ml-1 font-semibold">Comment</p>
 				<textarea
 					className="block w-full border p-2"
 					rows={4}
@@ -70,12 +70,16 @@ export function ReviewForm({
 				/>
 			</label>
 			<div className="flex gap-4">
-				<button className="border px-4 py-2" type="submit" disabled={busy}>
+				<button
+					className="btn-primary border px-4 py-2"
+					type="submit"
+					disabled={busy}
+				>
 					{submitLabel}
 				</button>
 				{onDelete && (
 					<button
-						className="border px-4 py-2"
+						className="btn-danger border px-4 py-2"
 						type="button"
 						disabled={busy}
 						onClick={() => void run(onDelete)}
