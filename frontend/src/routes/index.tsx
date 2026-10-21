@@ -28,11 +28,11 @@ export function Home() {
 			<p className="mt-4 text-lg">
 				Rate, review and keep a backlog of the games you play on Linux.
 			</p>
-			<p className="mt-8 flex items-center gap-2">
+			<p className="mt-8 flex flex-col gap-2">
 				<Link className="underline" to="/games">
 					Browse games
 				</Link>
-				{user ? (<></>) : (<Link className="underline" to="/auth">
+				{!user && (<Link className="underline" to="/auth">
 					Log in or sign up
 				</Link>)
 				}
