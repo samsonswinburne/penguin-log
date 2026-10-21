@@ -68,3 +68,101 @@ jobs:
           (needs.backend.result == 'success' || needs.backend.result == 'skipped') &&
           (needs.frontend.result == 'success' || needs.backend.result == 'success') }}
     uses: ./.github/workflows/staging-tests.yml
+
+
+  record-release:
+    needs: staging-tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::298493766637:role/GitHub-Actions-Write-Read-ECR
+          aws-region: ap-southeast-2
+          allowed-account-ids: '298493766637'
+
+      - name: Wait for staging services
+        run: |
+          aws ecs wait services-stable --cluster penguinlog-staging --services \
+            penguinlog-frontend-staging-service-0vmui6p9 \
+            penguinlog-backend-staging-service-40lqk0j1
+
+      - name: Record the image digests running in tested staging
+        env:
+          AWS_REGION: ap-southeast-2
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, re, subprocess
+
+          def aws(*args):
+              return json.loads(subprocess.check_output(['aws', *args, '--output', 'json'], text=True))
+
+          services = {
+              'frontend': 'penguinlog-frontend-staging-service-0vmui6p9',
+              'backend': 'penguinlog-backend-staging-service-40lqk0j1',
+          }
+          registry = '298493766637.dkr.ecr.ap-southeast-2.amazonaws.com'
+          images = {}
+          for app, name in services.items():
+              info = aws('ecs', 'describe-services', '--cluster', 'penguinlog-staging', '--services', name)
+              if info.get('failures') or len(info.get('services', [])) != 1:
+                  raise SystemExit(f'Cannot describe staging service {app}')
+              service = info['services'][0]
+              if (len(service['deployments']) != 1 or service['desiredCount'] < 1
+                      or service['runningCount'] != service['desiredCount'] or service['pendingCount'] != 0
+                      or service['deployments'][0].get('rolloutState') != 'COMPLETED'):
+                  raise SystemExit(f'{app} staging service must be stable before recording a release')
+              arns = aws('ecs', 'list-tasks', '--cluster', 'penguinlog-staging', '--service-name', name,
+                         '--desired-status', 'RUNNING')['taskArns']
+              if len(arns) != service['desiredCount']:
+                  raise SystemExit(f'Unexpected number of running tasks for {app}')
+              detail = aws('ecs', 'describe-tasks', '--cluster', 'penguinlog-staging', '--tasks', *arns)
+              if detail.get('failures') or len(detail.get('tasks', [])) != len(arns):
+                  raise SystemExit(f'Cannot describe all staging tasks for {app}')
+              digests = set()
+              for task in detail['tasks']:
+                  if task['lastStatus'] != 'RUNNING' or task['taskDefinitionArn'] != service['taskDefinition']:
+                      raise SystemExit(f'Unexpected staging task revision/status for {app}')
+                  containers = [c for c in task['containers'] if c['name'] == app]
+                  if len(containers) != 1 or containers[0]['lastStatus'] != 'RUNNING':
+                      raise SystemExit(f'Expected one running {app} container')
+                  container = containers[0]
+                  repository = container['image'].split('@')[0].rsplit(':', 1)[0]
+                  if repository != f'{registry}/penguinlog/{app}':
+                      raise SystemExit(f'Unexpected image repository for {app}')
+                  digest = container.get('imageDigest', '')
+                  if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
+                      raise SystemExit(f'Missing image digest for {app}')
+                  digests.add(digest)
+              if len(digests) != 1:
+                  raise SystemExit(f'Mixed image digests for {app}')
+              images[app] = f'{registry}/penguinlog/{app}@{digests.pop()}'
+          manifest = {
+              'schema': 1,
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'commit': os.environ['GITHUB_SHA'],
+              'images': images,
+          }
+          with open('release.json', 'w') as file:
+              json.dump(manifest, file, indent=2)
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write(f"Production release candidate: staging run **{manifest['run_id']}**\n\n")
+              for app, image in images.items():
+                  summary.write(f'- {app}: `{image}`\n')
+              summary.write('\nTo promote, open Deploy production manually and enter this staging run ID.\n')
+          PY
+
+      - name: Save tested release manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-release
+          path: release.json
+          retention-days: 30
+          if-no-files-found: error
+          overwrite: true
