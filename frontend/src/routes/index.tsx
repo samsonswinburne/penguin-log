@@ -39,7 +39,8 @@ export function Home() {
 				)}
 			</p>
 			<p className="text-sm text-gray-600 m-auto mb-0">
-				Backend status: {status}
+				The current backend status is: {status}. If it doesn't say "ok"
+				something is wrong
 			</p>
 		</main>
 	);
